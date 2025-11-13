@@ -4,10 +4,15 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Note } from "@/lib/types";
 import { MDXRemoteSerializeResult } from "next-mdx-remote";
-import { MDXRemote } from "next-mdx-remote";
+import dynamic from "next/dynamic";
 import { SourceCitations } from "./SourceCitations";
 import { ScreenshotGallery } from "./ScreenshotGallery";
 import { cn } from "@/lib/utils";
+
+// Dynamically import MDXContent wrapper to avoid SSR issues
+const MDXContent = dynamic(() => import("./MDXContent"), {
+  ssr: false,
+});
 
 interface InnerTabsProps {
   note: Note;
@@ -77,7 +82,7 @@ export function InnerTabs({ note, mdxContent, className, showInfo = false }: Inn
       case "overview":
         content = (
           <div className="prose prose-sm max-w-none dark:prose-invert">
-            <MDXRemote {...mdxContent} />
+            <MDXContent mdxContent={mdxContent} />
           </div>
         );
         break;
