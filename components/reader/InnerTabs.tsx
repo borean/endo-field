@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Note } from "@/lib/types";
 import { MDXRemoteSerializeResult } from "next-mdx-remote";
 import { MDXRemote } from "next-mdx-remote";
@@ -12,6 +13,7 @@ interface InnerTabsProps {
   note: Note;
   mdxContent: MDXRemoteSerializeResult;
   className?: string;
+  showInfo?: boolean;
 }
 
 type TabId = "overview" | "explainer" | "sources" | "screenshots" | "unknowns";
@@ -24,43 +26,90 @@ const tabs: Array<{ id: TabId; label: string }> = [
   { id: "unknowns", label: "Unknowns" },
 ];
 
-export function InnerTabs({ note, mdxContent, className }: InnerTabsProps) {
+export function InnerTabs({ note, mdxContent, className, showInfo = false }: InnerTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>("overview");
+  const prevShowInfoRef = useRef(showInfo);
+  const [shouldAnimate, setShouldAnimate] = useState(false);
+
+  useEffect(() => {
+    // Only animate when showInfo transitions from false to true
+    if (!prevShowInfoRef.current && showInfo) {
+      setShouldAnimate(true);
+      // Reset after animation completes
+      const timer = setTimeout(() => {
+        setShouldAnimate(false);
+      }, 250);
+      prevShowInfoRef.current = showInfo;
+      return () => clearTimeout(timer);
+    } else {
+      prevShowInfoRef.current = showInfo;
+    }
+  }, [showInfo]);
+
+  const renderReferences = () => {
+    // Show references in all tabs when info button is active
+    if (!note.sources || note.sources.length === 0) {
+      return null;
+    }
+
+    return (
+      <AnimatePresence>
+        {showInfo && (
+          <motion.div
+            key="references"
+            initial={shouldAnimate ? { opacity: 0, height: 0 } : false}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="mt-6 pt-6 border-t border-border"
+          >
+            <SourceCitations sources={note.sources} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  };
 
   const renderTabContent = () => {
+    let content;
+
     switch (activeTab) {
       case "overview":
-        return (
+        content = (
           <div className="prose prose-sm max-w-none dark:prose-invert">
             <MDXRemote {...mdxContent} />
           </div>
         );
+        break;
 
       case "explainer":
-        return note.explainer ? (
+        content = note.explainer ? (
           <div className="p-6 rounded-card bg-code-bg border border-border">
             <p className="text-text leading-relaxed">{note.explainer}</p>
           </div>
         ) : (
           <p className="text-text-muted">No explainer available.</p>
         );
+        break;
 
       case "sources":
-        return note.sources ? (
+        content = note.sources ? (
           <SourceCitations sources={note.sources} />
         ) : (
           <p className="text-text-muted">No sources listed.</p>
         );
+        break;
 
       case "screenshots":
-        return note.screenshots ? (
+        content = note.screenshots ? (
           <ScreenshotGallery screenshots={note.screenshots} />
         ) : (
           <p className="text-text-muted">No screenshots available.</p>
         );
+        break;
 
       case "unknowns":
-        return note.unknowns && note.unknowns.length > 0 ? (
+        content = note.unknowns && note.unknowns.length > 0 ? (
           <ul className="space-y-3">
             {note.unknowns.map((unknown, index) => (
               <li
@@ -74,10 +123,18 @@ export function InnerTabs({ note, mdxContent, className }: InnerTabsProps) {
         ) : (
           <p className="text-text-muted">No open questions listed.</p>
         );
+        break;
 
       default:
-        return null;
+        content = null;
     }
+
+    return (
+      <>
+        {content}
+        {renderReferences()}
+      </>
+    );
   };
 
   return (

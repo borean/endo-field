@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { AnimatePresence } from "framer-motion";
 import { DrawerBackground } from "./DrawerBackground";
 import { FolderUnibody } from "./FolderUnibody";
+import { WelcomeCard } from "./WelcomeCard";
 import { Section } from "@/components/layout/Section";
 import { Note } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -92,10 +94,27 @@ export function DrawerScene({
     }, 300);
   };
 
+  const handleClickOutside = (e: React.MouseEvent) => {
+    // If a folder is open and we click outside the folder unibody, close it
+    if (frontFolder) {
+      const target = e.target as HTMLElement;
+      // Check if click is on a tab button (should toggle, not close)
+      const isTabButton = target.closest('button[data-active]');
+      // Check if click is inside the folder unibody (content or container)
+      const isFolderUnibody = target.closest('[data-folder-unibody]');
+      
+      // If click is not on a tab and not on folder unibody, close the folder
+      if (!isTabButton && !isFolderUnibody) {
+        handleCategoryToggle(null);
+      }
+    }
+  };
+
   return (
     <div 
       className={cn("relative h-full overflow-hidden", className)}
       style={{ touchAction: 'none', overscrollBehavior: 'none' }}
+      onClick={handleClickOutside}
     >
       <DrawerBackground isBlurred={isLifted} />
 
@@ -190,6 +209,24 @@ export function DrawerScene({
                   </div>
                 );
               })}
+
+              {/* Welcome card - shown when no folder is selected */}
+              <AnimatePresence>
+                {!frontFolder && (
+                  <div
+                    className="absolute"
+                    style={{
+                      zIndex: 150,
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      pointerEvents: 'none', // Allow clicks to pass through to tabs behind
+                    }}
+                  >
+                    <WelcomeCard />
+                  </div>
+                )}
+              </AnimatePresence>
             </div>
         </div>
       </Section>

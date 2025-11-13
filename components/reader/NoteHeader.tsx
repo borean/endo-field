@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ArrowLeft, Calendar, Clock } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Info } from "lucide-react";
 import { Note } from "@/lib/types";
 import { TagChips } from "@/components/common/TagChips";
 import { CategoryBadge } from "@/components/common/CategoryBadge";
@@ -12,9 +12,11 @@ interface NoteHeaderProps {
   note: Note;
   onBack?: () => void;
   className?: string;
+  showInfo?: boolean;
+  onToggleInfo?: () => void;
 }
 
-export function NoteHeader({ note, onBack, className }: NoteHeaderProps) {
+export function NoteHeader({ note, onBack, className, showInfo = false, onToggleInfo }: NoteHeaderProps) {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -61,6 +63,21 @@ export function NoteHeader({ note, onBack, className }: NoteHeaderProps) {
             )}
           </div>
         </div>
+        {onToggleInfo && (
+          <button
+            onClick={onToggleInfo}
+            className={cn(
+              "p-2 rounded-input",
+              "text-text-muted hover:text-text hover:bg-code-bg",
+              "transition-colors duration-motion",
+              "focus:outline-none",
+              showInfo && "text-accent bg-code-bg"
+            )}
+            aria-label={showInfo ? "Hide references" : "Show references"}
+          >
+            <Info className="h-5 w-5 icon" />
+          </button>
+        )}
       </div>
 
       {note.tags && note.tags.length > 0 && (

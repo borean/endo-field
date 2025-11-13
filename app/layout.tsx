@@ -21,7 +21,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Endo-Field | Pediatric Endocrinology Notes",
+  title: "Endo—Field | Pediatric Endocrinology Notes",
   description: "Personal pediatric endocrinology notes with precision instrument aesthetic",
 };
 

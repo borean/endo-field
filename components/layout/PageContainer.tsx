@@ -37,7 +37,7 @@ export function PageContainer({
     centered && "mx-auto",
     maxWidthSize && `max-w-[${getContainerWidth(maxWidthSize)}]`,
     !maxWidthSize && `max-w-[${getContainerWidth(containerSize)}]`,
-    applyPadding && padding !== "none" && getPaddingClasses(paddingVariant, paddingSize),
+    applyPadding && paddingSize !== "none" && getPaddingClasses(paddingVariant, paddingSize as PaddingSize),
     className
   );
 

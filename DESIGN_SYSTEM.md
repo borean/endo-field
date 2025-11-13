@@ -1,4 +1,4 @@
-# Endo-Field Design System
+# Endo—Field Design System
 
 **OP-1 Field × Clinical Precision aesthetic**  
 *Using Inter + Berkeley Mono with IBM Plex Mono fallback*
@@ -33,7 +33,7 @@ run on localhost:5555
 
 ## Introduction
 
-This design system serves as the central reference for the Endo-Field project — a personal pediatric endocrinology notes site with a precision instrument aesthetic. All design decisions, component specifications, and implementation guidelines are documented here to ensure consistency across the codebase.
+This design system serves as the central reference for the Endo—Field project — a personal pediatric endocrinology notes site with a precision instrument aesthetic. All design decisions, component specifications, and implementation guidelines are documented here to ensure consistency across the codebase.
 
 **Repository:** [https://github.com/borean/endo-field.git](https://github.com/borean/endo-field.git)
 
@@ -151,7 +151,7 @@ Use IBM Plex Mono whenever Berkeley Mono is unlicensed or unavailable. IBM Plex 
 
 ### Philosophy
 
-The Endo-Field layout system follows **highest abstraction principles** with a hierarchical component architecture. All layout values are defined in a single source of truth (`lib/layout.ts`), and components are built as reusable, configurable primitives that compose together.
+The Endo—Field layout system follows **highest abstraction principles** with a hierarchical component architecture. All layout values are defined in a single source of truth (`lib/layout.ts`), and components are built as reusable, configurable primitives that compose together.
 
 ### Architecture
 
@@ -732,7 +732,7 @@ document.addEventListener('pointermove', e => {
 - The environment shadow is felt, not seen
 - Use minimal motion (≤ 0.3s) — should evoke studio photography, not game rendering
 - This effect should never compete with text clarity; fade entirely under modals or focus states
-- Light direction and grain overlays must combine softly to maintain Endo-Field's analog feel
+- Light direction and grain overlays must combine softly to maintain Endo—Field's analog feel
 
 ---
 

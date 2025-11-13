@@ -2,6 +2,9 @@ import Fuse from "fuse.js";
 import { Note, SortMode } from "./types";
 import { getAllNotes } from "./notes";
 
+// Re-export SortMode for convenience
+export type { SortMode };
+
 let searchIndex: Fuse<Note> | null = null;
 
 /**

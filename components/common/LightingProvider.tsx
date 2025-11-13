@@ -27,7 +27,7 @@ interface LightingProviderProps {
 
 export function LightingProvider({ children }: LightingProviderProps) {
   const [intensity, setIntensity] = useState(85);
-  const [isEnabled, setIsEnabled] = useState(true);
+  const [isEnabled, setIsEnabled] = useState(false);
   const [lightMode, setLightMode] = useState<"bands" | "window">("bands");
 
   return (

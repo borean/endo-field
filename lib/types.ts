@@ -1,5 +1,5 @@
 /**
- * TypeScript type definitions for the Endo-Field notes system
+ * TypeScript type definitions for the Endo—Field notes system
  */
 
 export interface Source {

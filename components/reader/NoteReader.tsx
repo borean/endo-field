@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Note } from "@/lib/types";
 import { MDXRemoteSerializeResult } from "next-mdx-remote";
@@ -23,6 +23,8 @@ export function NoteReader({
   onBack,
   className,
 }: NoteReaderProps) {
+  const [showInfo, setShowInfo] = useState(false);
+
   return (
     <motion.div
       className={cn("min-h-screen", className)}
@@ -33,8 +35,17 @@ export function NoteReader({
       <PageContainer container="xl" maxWidth="5xl" padding="lg">
         <Section spacing="xl" padding="none">
           <div className="card rounded-card p-8">
-            <NoteHeader note={note} onBack={onBack} />
-            <InnerTabs note={note} mdxContent={mdxContent} />
+            <NoteHeader 
+              note={note} 
+              onBack={onBack} 
+              showInfo={showInfo}
+              onToggleInfo={() => setShowInfo(!showInfo)}
+            />
+            <InnerTabs 
+              note={note} 
+              mdxContent={mdxContent} 
+              showInfo={showInfo}
+            />
           </div>
         </Section>
       </PageContainer>

@@ -90,6 +90,7 @@ export function FolderUnibody({
         className
       )}
       style={{ zIndex }}
+      data-folder-unibody={category}
     >
       {/* Unibody Folder Header with Two Separate Ears */}
       <div 

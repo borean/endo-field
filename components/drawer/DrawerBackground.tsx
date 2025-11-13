@@ -14,8 +14,7 @@ export function DrawerBackground({ isBlurred, className }: DrawerBackgroundProps
     <motion.div
       className={cn("fixed inset-0 bg-bg", className)}
       animate={{
-        filter: isBlurred ? "blur(8px)" : "blur(0px)",
-        brightness: isBlurred ? 0.85 : 1,
+        filter: isBlurred ? "blur(8px) brightness(0.85)" : "blur(0px) brightness(1)",
       }}
       transition={{
         duration: 0.22,

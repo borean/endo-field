@@ -65,8 +65,7 @@ export function HomePageClient({ initialNotes, categories }: HomePageClientProps
       className="relative h-screen overflow-hidden flex flex-col"
       style={{ 
         touchAction: 'none',
-        overscrollBehavior: 'none',
-        WebkitOverflowScrolling: 'none'
+        overscrollBehavior: 'none'
       }}
     >
       <TopBar />
