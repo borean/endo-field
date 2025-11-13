@@ -62,7 +62,7 @@ export function TopBar({
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
           {/* Logo */}
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-normal text-[#FF6B35] ml-[10px]">Endo—Field</h1>
+            <h1 className="text-xl font-normal text-[#FF6B35] ml-[10px] whitespace-nowrap">Endo—Field</h1>
           </div>
 
           {/* Theme Toggle & Settings */}

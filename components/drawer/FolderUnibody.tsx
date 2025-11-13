@@ -1,12 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { X, Maximize2, Minimize2, Info, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, Maximize2, Minimize2, Info, ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react";
 import { Note } from "@/lib/types";
 import { CategoryBadge } from "@/components/common/CategoryBadge";
 import { TagChips } from "@/components/common/TagChips";
 import { SourceCitations } from "@/components/reader/SourceCitations";
+import { NoteHeader } from "@/components/reader/NoteHeader";
+import { InnerTabs } from "@/components/reader/InnerTabs";
+import { MDXRemoteSerializeResult } from "next-mdx-remote";
 import { cn } from "@/lib/utils";
 
 interface FolderUnibodyProps {
@@ -15,6 +18,8 @@ interface FolderUnibodyProps {
   isActive: boolean;
   onClick: () => void;
   onNoteClick: (note: Note) => void;
+  selectedNote: Note | null;
+  onNoteDeselect: () => void;
   className?: string;
   tabPosition?: "left" | "right" | "center";
   zIndex?: number;
@@ -30,6 +35,8 @@ export function FolderUnibody({
   isActive,
   onClick,
   onNoteClick,
+  selectedNote,
+  onNoteDeselect,
   className,
   tabPosition = "left",
   zIndex,
@@ -38,11 +45,44 @@ export function FolderUnibody({
   onNextTab,
   roundTopLeftCorner = false,
 }: FolderUnibodyProps) {
-  const [isMaximized, setIsMaximized] = React.useState(false);
-  const [showInfo, setShowInfo] = React.useState(false);
-  const [selectedNoteIndex, setSelectedNoteIndex] = React.useState<number | null>(null);
+  const [isMaximized, setIsMaximized] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
+  const [selectedNoteIndex, setSelectedNoteIndex] = useState<number | null>(null);
+  const [mdxContent, setMdxContent] = useState<MDXRemoteSerializeResult | null>(null);
+  const [isLoadingMdx, setIsLoadingMdx] = useState(false);
   const earTextClass = isActive ? "text-text" : "text-text-muted opacity-60";
   const bodyBoxShadow = "inset 0 0 0 1px var(--border)";
+
+  // Serialize MDX when selectedNote changes
+  useEffect(() => {
+    if (selectedNote && selectedNote.category === category) {
+      setIsLoadingMdx(true);
+      // Call API route to serialize MDX on the server
+      fetch("/api/serialize-mdx", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: selectedNote.content }),
+      })
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Failed to serialize MDX");
+          }
+          return res.json();
+        })
+        .then((data) => {
+          setMdxContent(data.mdxContent);
+          setIsLoadingMdx(false);
+        })
+        .catch((error) => {
+          console.error("Error serializing MDX:", error);
+          setIsLoadingMdx(false);
+        });
+    } else {
+      setMdxContent(null);
+    }
+  }, [selectedNote, category]);
 
   const handleMaximize = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -79,6 +119,14 @@ export function FolderUnibody({
     setSelectedNoteIndex(index);
     onNoteClick(note);
   };
+
+  const handleBackToList = () => {
+    setSelectedNoteIndex(null);
+    onNoteDeselect();
+  };
+
+  // Check if we should show note detail view
+  const showNoteDetail = selectedNote && selectedNote.category === category && mdxContent;
 
   return (
     <div
@@ -287,7 +335,7 @@ export function FolderUnibody({
       <motion.div
         initial={false}
         animate={{
-          height: isActive ? (isMaximized ? "auto" : "400px") : 0,
+          height: isActive ? (isMaximized ? "auto" : showNoteDetail ? "calc(100vh - 150px)" : "400px") : 0,
           opacity: isActive ? 1 : 0,
         }}
         transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
@@ -303,14 +351,51 @@ export function FolderUnibody({
         <div style={{ height: "20px", pointerEvents: "none" }} />
 
         <div
-          className="pointer-events-auto p-6 space-y-4 overflow-y-auto"
-          style={{ maxHeight: isMaximized ? "none" : "400px" }}
+          className={cn(
+            "pointer-events-auto overflow-y-auto",
+            showNoteDetail ? "p-8" : "p-6 space-y-4"
+          )}
+          style={{ 
+            maxHeight: isMaximized ? "none" : showNoteDetail ? "calc(100vh - 150px)" : "400px",
+          }}
         >
-          {notes.length === 0 ? (
+          {showNoteDetail && selectedNote && mdxContent ? (
+            // Note detail view
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <button
+                onClick={handleBackToList}
+                className="inline-flex items-center gap-2 text-text-muted hover:text-accent mb-6 transition-colors duration-motion"
+              >
+                <ArrowLeft className="h-4 w-4 icon" />
+                <span>Back to list</span>
+              </button>
+              <NoteHeader 
+                note={selectedNote} 
+                showInfo={showInfo}
+                onToggleInfo={() => setShowInfo(!showInfo)}
+              />
+              <InnerTabs 
+                note={selectedNote} 
+                mdxContent={mdxContent} 
+                showInfo={showInfo}
+              />
+            </motion.div>
+          ) : isLoadingMdx ? (
+            // Loading state
+            <div className="flex items-center justify-center py-12">
+              <p className="text-sm text-text-muted">Loading note...</p>
+            </div>
+          ) : notes.length === 0 ? (
+            // Empty state
             <p className="text-sm text-text-muted text-center py-4">
               No notes in this folder
             </p>
           ) : (
+            // Note list view
             notes.map((note, index) => (
               <motion.div
                 key={note.slug}

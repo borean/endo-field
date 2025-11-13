@@ -13,6 +13,7 @@ interface SectionProps {
   centered?: boolean;
   applySpacing?: boolean;
   spacing?: "none" | SpacingSize;
+  spacingTop?: "none" | SpacingSize;
   variant?: "default" | "surface" | "muted" | "transparent";
   padding?: PaddingSize | "none";
   className?: string;
@@ -26,6 +27,7 @@ export function Section({
   centered = true,
   applySpacing = true,
   spacing = "lg",
+  spacingTop,
   variant = "default",
   padding = "none",
   className,
@@ -35,13 +37,14 @@ export function Section({
   const containerSize = container || defaultContainer;
   const maxWidthSize = maxWidth || defaultMaxWidth;
   const spacingSize = spacing === "none" ? "none" : spacing || defaultSpacing || "lg";
+  const topSpacingSize = spacingTop !== undefined ? spacingTop : spacingSize;
 
   const sectionClasses = cn(
     "w-full",
     centered && (containerSize || maxWidthSize) && "mx-auto",
     maxWidthSize && `max-w-[${getContainerWidth(maxWidthSize)}]`,
     !maxWidthSize && containerSize && `max-w-[${getContainerWidth(containerSize)}]`,
-    applySpacing && spacingSize !== "none" && getSpacingClasses(spacingSize),
+    applySpacing && spacingSize !== "none" && getSpacingClasses(spacingSize, topSpacingSize),
     padding !== "none" && getPaddingClasses(padding),
     getVariantClasses(variant),
     className
@@ -69,17 +72,31 @@ function getContainerWidth(size: ContainerSize): string {
   return widths[size];
 }
 
-function getSpacingClasses(size: SpacingSize): string {
-  const spacing: Record<SpacingSize, string> = {
-    xs: "my-2",
-    sm: "my-4",
-    md: "my-6",
-    lg: "my-8",
-    xl: "my-12",
-    "2xl": "my-16",
-    "3xl": "my-24",
+function getSpacingClasses(bottomSize: SpacingSize, topSize: SpacingSize | "none"): string {
+  const bottomSpacing: Record<SpacingSize, string> = {
+    xs: "mb-2",
+    sm: "mb-4",
+    md: "mb-6",
+    lg: "mb-8",
+    xl: "mb-12",
+    "2xl": "mb-16",
+    "3xl": "mb-24",
   };
-  return spacing[size];
+  
+  const topSpacing: Record<SpacingSize, string> = {
+    xs: "mt-2",
+    sm: "mt-4",
+    md: "mt-6",
+    lg: "mt-8",
+    xl: "mt-12",
+    "2xl": "mt-16",
+    "3xl": "mt-24",
+  };
+  
+  const bottomClass = bottomSpacing[bottomSize];
+  const topClass = topSize === "none" ? "" : topSpacing[topSize];
+  
+  return cn(bottomClass, topClass);
 }
 
 function getPaddingClasses(size: PaddingSize): string {

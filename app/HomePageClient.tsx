@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { TopBar } from "@/components/common/TopBar";
 import { DrawerScene } from "@/components/drawer/DrawerScene";
 import { searchNotes, filterByCategory, sortNotes, SortMode } from "@/lib/search";
@@ -13,10 +12,10 @@ interface HomePageClientProps {
 }
 
 export function HomePageClient({ initialNotes, categories }: HomePageClientProps) {
-  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [sortMode, setSortMode] = useState<SortMode>("date");
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
 
   const filteredNotes = useMemo(() => {
     let notes = initialNotes;
@@ -38,7 +37,7 @@ export function HomePageClient({ initialNotes, categories }: HomePageClientProps
   }, [initialNotes, searchQuery, selectedCategory, sortMode]);
 
   const handleNoteSelect = (note: Note) => {
-    router.push(`/note/${note.slug}`);
+    setSelectedNote(note);
   };
 
   // Prevent body scrolling on main page
@@ -76,6 +75,8 @@ export function HomePageClient({ initialNotes, categories }: HomePageClientProps
         activeCategory={selectedCategory}
         onCategorySelect={setSelectedCategory}
         onNoteSelect={handleNoteSelect}
+        selectedNote={selectedNote}
+        onNoteDeselect={() => setSelectedNote(null)}
       />
       </div>
     </div>

@@ -49,5 +49,6 @@ export type Category =
   | "Diabetes"
   | "Calcium"
   | "Genetics"
+  | "Pituitary"
   | "Misc";
 

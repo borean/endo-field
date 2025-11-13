@@ -33,7 +33,7 @@ export function WelcomeCard({ className }: WelcomeCardProps) {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-semibold text-text tracking-tight mb-4">
-            Welcome to Endo—Field
+            Welcome to <span className="whitespace-nowrap">Endo—Field</span>
           </h1>
           <p className="text-lg text-text-muted leading-relaxed mb-6">
             A personal pediatric endocrinology notes collection — organized like a precision instrument.
